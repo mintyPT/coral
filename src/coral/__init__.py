@@ -195,9 +195,7 @@ class NodeGenerator:
         self.template_visitor.traverse(self.node)
 
         self.templates = templates or {}
-        self.templates[
-            "void"
-        ] = """{%- for child in node.children -%}
+        self.templates["void"] = """{%- for child in node.children -%}
     {{ render(child) }}
 {%- endfor %}"""
 
