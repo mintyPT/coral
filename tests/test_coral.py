@@ -12,7 +12,6 @@ from src.coral import (
     Settings,
     TemplateEngine,
     XmlNodeBuilder,
-    apply_functions,
     iter_tree,
     map_func,
     prepare_paths,
@@ -68,11 +67,6 @@ def temporary_files(
 @pytest.fixture
 def settings() -> Settings:
     return Settings()
-
-
-def test__apply_functions():
-    assert apply_functions([], 3) == 3
-    assert apply_functions([str], 3) == "3"
 
 
 def test__remove_dups():

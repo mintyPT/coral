@@ -1,3 +1,4 @@
+import functools
 from typing import Any
 
 
@@ -13,3 +14,7 @@ def flatten(arr: list[list[Any]]) -> list[Any]:
     [1, 2, 3, 4, 5]
     """
     return [element for subarr in arr for element in subarr]
+
+
+def apply_functions(functions, initial_value):
+    return functools.reduce(lambda value, func: func(value), functions, initial_value)

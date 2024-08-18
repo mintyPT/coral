@@ -1,8 +1,8 @@
 import os
 from coral.utils import flatten
+from coral.utils import apply_functions
 import yaml
 import json
-import functools
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from jinja2 import (
@@ -10,10 +10,6 @@ from jinja2 import (
     FileSystemLoader,
     Template,
 )
-
-
-def apply_functions(functions, initial_value):
-    return functools.reduce(lambda value, func: func(value), functions, initial_value)
 
 
 def remove_dups(arr):
