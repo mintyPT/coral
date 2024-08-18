@@ -381,6 +381,9 @@ Team b-players:
 """
     assert res == expected, f"{res!r} != {expected!r}"
 
+    Path("a-players.txt").unlink()
+    Path("b-players.txt").unlink()
+
 
 model = (
     "class {{ node.name }}Model(models.Model):\n"
