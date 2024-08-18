@@ -206,7 +206,6 @@ class YamlAttributeVisitor(NodeVisitor):
 
 
 class NodeGenerator:
-
     def __init__(self, xml_input, root_dir=".", templates=None, settings=None):
         self.settings = settings or Settings()
 
@@ -229,9 +228,7 @@ class NodeGenerator:
         self.template_visitor.traverse(self.node)
 
         self.templates = templates or {}
-        self.templates[
-            "void"
-        ] = """{%- for child in node.children -%}
+        self.templates["void"] = """{%- for child in node.children -%}
     {{ render(child) }}
 {%- endfor %}"""
 
@@ -240,7 +237,6 @@ class NodeGenerator:
         return self.xml_builder.build(root_element)
 
     def _render(self, node):
-
         ctx = {"node": node, "render": self._render}
 
         template_content = self.templates.get(node.tag)
