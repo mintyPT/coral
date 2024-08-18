@@ -1,5 +1,5 @@
 import os
-from typing import Any
+from coral.utils import flatten
 import yaml
 import json
 import functools
@@ -10,20 +10,6 @@ from jinja2 import (
     FileSystemLoader,
     Template,
 )
-
-
-def flatten(arr: list[list[Any]]) -> list[Any]:
-    """
-    Flattens a list of lists into a single list.
-
-    :param arr: A list of lists to be flattened.
-    :return: A single list containing all the elements of the nested lists.
-
-    Example:
-    >>> flatten([[1, 2], [3, 4], [5]])
-    [1, 2, 3, 4, 5]
-    """
-    return [element for subarr in arr for element in subarr]
 
 
 def apply_functions(functions, initial_value):
@@ -228,7 +214,9 @@ class NodeGenerator:
         self.template_visitor.traverse(self.node)
 
         self.templates = templates or {}
-        self.templates["void"] = """{%- for child in node.children -%}
+        self.templates[
+            "void"
+        ] = """{%- for child in node.children -%}
     {{ render(child) }}
 {%- endfor %}"""
 

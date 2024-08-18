@@ -13,7 +13,6 @@ from src.coral import (
     TemplateEngine,
     XmlNodeBuilder,
     apply_functions,
-    flatten,
     iter_tree,
     map_func,
     prepare_paths,
@@ -78,10 +77,6 @@ def test__apply_functions():
 
 def test__remove_dups():
     assert remove_dups([1, 2, 3, 1, 2, 3]) == [1, 2, 3]
-
-
-def test__flatten():
-    assert flatten([[1, 2, 3], [4, 5, 6]]) == [1, 2, 3, 4, 5, 6]
 
 
 def test__iter_tree():
