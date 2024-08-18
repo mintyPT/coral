@@ -1,5 +1,4 @@
 import logging
-import os
 from .utils import flatten
 from .utils import apply_functions
 from .utils import remove_dups
@@ -148,16 +147,17 @@ class NodeAttributesRenderereVisitor(NodeVisitor):
 
 
 class YamlAttributeVisitor(NodeVisitor):
-    def __init__(self, directories=["."], template_engine=None):
-        self.directories = directories
+    def __init__(self, directories=[Path(".")], template_engine=None):
+        # Ensure all directories are Path objects
+        self.directories = [Path(directory) for directory in directories]
         # Use the provided template engine or create a new one if not provided
         self.template_engine = template_engine or TemplateEngine()
 
     def visit(self, node):
         for directory in self.directories:
-            yaml_file = os.path.join(directory, f"{node.tag}.yaml")
-            if os.path.exists(yaml_file):
-                with open(yaml_file, "r") as file:
+            yaml_file = directory / f"{node.tag}.yaml"
+            if yaml_file.exists():
+                with yaml_file.open("r") as file:
                     # Render the YAML content first
                     raw_yaml_content = file.read()
                     rendered_yaml_content = self.template_engine.render_from_string(
