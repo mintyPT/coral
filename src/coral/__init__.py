@@ -1,6 +1,9 @@
 import os
 from coral.utils import flatten
 from coral.utils import apply_functions
+from coral.utils import remove_dups
+from coral.utils import iter_tree
+from coral.utils import map_func
 import yaml
 import json
 from pathlib import Path
@@ -10,24 +13,6 @@ from jinja2 import (
     FileSystemLoader,
     Template,
 )
-
-
-def remove_dups(arr):
-    ret = []
-    for a in arr:
-        if a not in ret:
-            ret.append(a)
-    return ret
-
-
-def iter_tree(path: Path):
-    yield path
-    if path.parent and path.parent != path:
-        yield from iter_tree(path.parent)
-
-
-def map_func(func):
-    return lambda arr: list(map(func, arr))
 
 
 class Settings:

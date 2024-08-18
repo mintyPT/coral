@@ -12,10 +12,7 @@ from src.coral import (
     Settings,
     TemplateEngine,
     XmlNodeBuilder,
-    iter_tree,
-    map_func,
     prepare_paths,
-    remove_dups,
 )
 from pathlib import Path
 
@@ -67,23 +64,6 @@ def temporary_files(
 @pytest.fixture
 def settings() -> Settings:
     return Settings()
-
-
-def test__remove_dups():
-    assert remove_dups([1, 2, 3, 1, 2, 3]) == [1, 2, 3]
-
-
-def test__iter_tree():
-    assert list(iter_tree(Path("/a/b/c"))) == [
-        Path("/a/b/c"),
-        Path("/a/b"),
-        Path("/a"),
-        Path("/"),
-    ], list(iter_tree(Path("/a/b/c").resolve()))
-
-
-def test__map_func():
-    assert list(map_func(lambda n: n * 2)([1, 2, 3])) == [2, 4, 6]
 
 
 def test__prepare_paths(settings: Settings) -> None:

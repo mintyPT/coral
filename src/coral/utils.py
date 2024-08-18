@@ -1,4 +1,5 @@
 import functools
+from pathlib import Path
 from typing import Any, Callable
 
 
@@ -40,3 +41,21 @@ def apply_functions(functions: list[Callable[[Any], Any]], initial_value: Any) -
     12
     """
     return functools.reduce(lambda value, func: func(value), functions, initial_value)
+
+
+def remove_dups(arr):
+    ret = []
+    for a in arr:
+        if a not in ret:
+            ret.append(a)
+    return ret
+
+
+def iter_tree(path: Path):
+    yield path
+    if path.parent and path.parent != path:
+        yield from iter_tree(path.parent)
+
+
+def map_func(func):
+    return lambda arr: list(map(func, arr))
