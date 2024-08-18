@@ -1,9 +1,9 @@
 import os
-from coral.utils import flatten
-from coral.utils import apply_functions
-from coral.utils import remove_dups
-from coral.utils import iter_tree
-from coral.utils import map_func
+from .utils import flatten
+from .utils import apply_functions
+from .utils import remove_dups
+from .utils import iter_tree
+from .utils import map_func
 import yaml
 import json
 from pathlib import Path

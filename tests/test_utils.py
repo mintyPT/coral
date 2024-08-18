@@ -1,5 +1,5 @@
 from pathlib import Path
-from coral.utils import apply_functions, flatten, iter_tree, map_func, remove_dups
+from src.coral.utils import apply_functions, flatten, iter_tree, map_func, remove_dups
 
 
 def test__flatten():
