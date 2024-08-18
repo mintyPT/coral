@@ -1,70 +1,15 @@
 import os
-import os
-from typing import Any, Generator, Optional
+from typing import Any
 import yaml
 import json
-import logging
 import functools
 from pathlib import Path
 import xml.etree.ElementTree as ET
-from contextlib import contextmanager
-from pprint import pprint
-import functools
 from jinja2 import (
-    FileSystemLoader,
-    TemplateNotFound,
     Environment,
     FileSystemLoader,
     Template,
 )
-import logging as logging_
-
-import logging
-import sys
-
-
-@contextmanager
-def temporary_files(
-    file_dict: dict[str, str], prefix: Optional[str] = None
-) -> Generator[None, None, None]:
-    """
-    A context manager to create temporary files from a dictionary and ensure they are deleted afterward.
-
-    This context manager writes files specified in `file_dict` to disk, optionally within a given `prefix` directory.
-    After the context exits, all created files are deleted.
-
-    :param file_dict: A dictionary where keys are file paths (relative to the prefix, if provided) and values are the content to write to each file.
-    :param prefix: Optional directory prefix to prepend to each file path. Defaults to None.
-    :yield: Yields control back to the calling context.
-    """
-    paths = []  # List to store the paths of created files
-    try:
-        # Iterate over the items in the file_dict
-        for filepath, content in file_dict.items():
-            # Determine the full path to the file, optionally adding the prefix
-            if prefix:
-                path = Path(".") / prefix / filepath
-            else:
-                path = Path(".") / filepath
-
-            # Create the parent directory if it doesn't exist
-            if not path.parent.exists():
-                path.parent.mkdir(parents=True, exist_ok=True)
-
-            # Write the file content to the specified path
-            logging.debug(f"Wrote {path.resolve()}")
-            path.write_text(content)
-
-            # Store the path for later cleanup
-            paths.append(path)
-
-        # Yield control back to the calling context
-        yield
-    finally:
-        # Clean up: remove all the created files
-        for path in paths:
-            if path.exists():
-                path.unlink()
 
 
 def flatten(arr: list[list[Any]]) -> list[Any]:
@@ -147,21 +92,7 @@ class Node:
         indent = "    " * level
         child_str = "\n".join([child.__str__(level + 1) for child in self.children])
         attrs_str = ", ".join(f"{k}={v}" for k, v in self.attributes.items())
-        return f"{indent}Node({attrs_str})" + f"\n{child_str}" if child_str else f""
-
-
-class JsonNodeBuilder:
-    def build(self, data):
-        if isinstance(data, dict):
-            attributes = {k: v for k, v in data.items() if k != "children"}
-            children = [self.build(child) for child in data.get("children", [])]
-            return Node(**attributes, children=children)
-        return None
-
-    def build_from_file(self, filepath):
-        with open(filepath, "r") as file:
-            data = json.load(file)
-            return self.build(data)
+        return f"{indent}Node({attrs_str})" + f"\n{child_str}" if child_str else ""
 
 
 class NodeVisitor:
@@ -332,46 +263,3 @@ class NodeGenerator:
     def generate(self):
         ret = self._render(self.node)
         return ret
-
-
-# test
-
-# import nbformat
-
-# from IPython.display import display, Javascript
-
-# def copy_to_clipboard(text):
-#     js_code = f"""
-#     navigator.clipboard.writeText(`{text}`).then(function() {{
-#         console.log('Text copied to clipboard');
-#     }}, function(err) {{
-#         console.error('Could not copy text: ', err);
-#     }});
-#     """
-#     display(Javascript(js_code))
-
-
-# def copy_all_cells(notebook_path):
-#     # Load the notebook
-#     with open(notebook_path, 'r', encoding='utf-8') as f:
-#         notebook = nbformat.read(f, as_version=4)
-
-#     # Copy all cells
-#     cells_copy = notebook.cells.copy()
-
-#     return cells_copy
-
-# # Example usage
-# notebook_path = 'node.ipynb'
-# all_cells = copy_all_cells(notebook_path)
-
-
-# code = ""
-# for cell in all_cells:
-#     if not cell['source'].startswith(("# test", )) and cell['cell_type'] == 'code':
-#         code += " "
-#         code += cell['source']
-
-# # Example usage
-# text_to_copy = code
-# copy_to_clipboard(text_to_copy)

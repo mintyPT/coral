@@ -1,8 +1,9 @@
+from typing import Generator, Optional
 import pytest
-from textwrap import dedent
 from jinja2 import Environment, FileSystemLoader
 import xml.etree.ElementTree as ET
-
+from contextlib import contextmanager
+import logging
 from src.coral import (
     JsonNodeBuilder,
     Node,
@@ -17,9 +18,52 @@ from src.coral import (
     map_func,
     prepare_paths,
     remove_dups,
-    temporary_files,
 )
 from pathlib import Path
+
+
+@contextmanager
+def temporary_files(
+    file_dict: dict[str, str], prefix: Optional[str] = None
+) -> Generator[None, None, None]:
+    """
+    A context manager to create temporary files from a dictionary and ensure they are deleted afterward.
+
+    This context manager writes files specified in `file_dict` to disk, optionally within a given `prefix` directory.
+    After the context exits, all created files are deleted.
+
+    :param file_dict: A dictionary where keys are file paths (relative to the prefix, if provided) and values are the content to write to each file.
+    :param prefix: Optional directory prefix to prepend to each file path. Defaults to None.
+    :yield: Yields control back to the calling context.
+    """
+    paths = []  # List to store the paths of created files
+    try:
+        # Iterate over the items in the file_dict
+        for filepath, content in file_dict.items():
+            # Determine the full path to the file, optionally adding the prefix
+            if prefix:
+                path = Path(".") / prefix / filepath
+            else:
+                path = Path(".") / filepath
+
+            # Create the parent directory if it doesn't exist
+            if not path.parent.exists():
+                path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Write the file content to the specified path
+            logging.debug(f"Wrote {path.resolve()}")
+            path.write_text(content)
+
+            # Store the path for later cleanup
+            paths.append(path)
+
+        # Yield control back to the calling context
+        yield
+    finally:
+        # Clean up: remove all the created files
+        for path in paths:
+            if path.exists():
+                path.unlink()
 
 
 @pytest.fixture
@@ -103,9 +147,9 @@ def test__b():
 
     json_builder = JsonNodeBuilder()
     root_node = json_builder.build(json_data)
-    assert root_node.name == "root", root.name
-    assert root_node.children[0].name == "child1", child1.name
-    assert root_node.children[1].name == "root", child2.name
+    assert root_node.name == "root", root_node.name
+    assert root_node.children[0].name == "child1", root_node.children[0]
+    assert root_node.children[1].name == "root", root_node.children[1]
 
 
 def test__c():
@@ -122,9 +166,9 @@ def test__c():
     xml_root = ET.fromstring(xml_data)
     xml_builder = XmlNodeBuilder()
     root_node = xml_builder.build(xml_root)
-    assert root_node.name == "root", root.name
-    assert root_node.children[0].name == "child1", child1.name
-    assert root_node.children[1].name == "root", child2.name
+    assert root_node.name == "root", root_node.name
+    assert root_node.children[0].name == "child1", root_node.children[0].name
+    assert root_node.children[1].name == "root", root_node.children[1].name
 
 
 def test__d():
