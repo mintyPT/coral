@@ -1,8 +1,7 @@
 import functools
-from typing import TypeVar
+import logging
 from pathlib import Path
-from typing import Any, Callable
-from typing import Generator
+from typing import Any, Callable, Generator, TypeVar
 
 
 def flatten(arr: list[list[Any]]) -> list[Any]:
@@ -96,3 +95,15 @@ def map_func(func: Callable[[T], U]) -> Callable[[list[T]], list[U]]:
     [2, 4, 6]
     """
     return lambda arr: list(map(func, arr))
+
+
+def ensure_directory_exists(path: Path) -> None:
+    """Ensure that the directory for the given path exists."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def write_to_file(path: Path, content: str) -> None:
+    """Write the content to the file at the given path."""
+    ensure_directory_exists(path)
+    path.write_text(content)
+    logging.info(f"Saved to {path}")
