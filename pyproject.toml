@@ -11,9 +11,12 @@ dependencies = [
     "ruff>=0.6.1",
     "mypy>=1.11.1",
     "types-pyyaml>=6.0.12.20240808",
+    "types-jinja2>=2.11.9",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.mypy-pytest]
+ignore_missing_imports = true
