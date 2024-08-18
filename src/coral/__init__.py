@@ -1,18 +1,12 @@
-import logging
-from .utils import flatten
-from .utils import apply_functions
-from .utils import remove_dups
-from .utils import iter_tree
-from .utils import map_func
-import yaml
 import json
-from pathlib import Path
+import logging
 import xml.etree.ElementTree as ET
-from jinja2 import (
-    Environment,
-    FileSystemLoader,
-    Template,
-)
+from pathlib import Path
+
+import yaml
+from jinja2 import Environment, FileSystemLoader, Template
+
+from .utils import apply_functions, flatten, iter_tree, map_func, remove_dups
 
 
 class Settings:

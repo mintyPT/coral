@@ -1,20 +1,15 @@
-from typing import Generator, Optional
-import pytest
-from jinja2 import Environment, FileSystemLoader
+import logging
 import xml.etree.ElementTree as ET
 from contextlib import contextmanager
-import logging
-from src.coral import (
-    JsonNodeBuilder,
-    Node,
-    NodeAttributesRenderereVisitor,
-    NodeGenerator,
-    Settings,
-    TemplateEngine,
-    XmlNodeBuilder,
-    prepare_paths,
-)
 from pathlib import Path
+from typing import Generator, Optional
+
+import pytest
+from jinja2 import Environment, FileSystemLoader
+
+from src.coral import (JsonNodeBuilder, Node, NodeAttributesRenderereVisitor,
+                       NodeGenerator, Settings, TemplateEngine, XmlNodeBuilder,
+                       prepare_paths)
 
 
 @contextmanager
