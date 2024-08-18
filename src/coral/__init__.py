@@ -1,3 +1,4 @@
+import logging
 import os
 from .utils import flatten
 from .utils import apply_functions
@@ -219,7 +220,7 @@ class NodeGenerator:
             output_path = Path(node.attributes["coral-to"])
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(ret)
-            print(f"Saved to {output_path}")
+            logging.info(f"Saved to {output_path}")
 
         return ret
 
