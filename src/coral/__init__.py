@@ -1,6 +1,6 @@
 import os
 import os
-from typing import Generator, Optional
+from typing import Any, Generator, Optional
 import yaml
 import json
 import logging
@@ -36,7 +36,6 @@ def temporary_files(
     :param file_dict: A dictionary where keys are file paths (relative to the prefix, if provided) and values are the content to write to each file.
     :param prefix: Optional directory prefix to prepend to each file path. Defaults to None.
     :yield: Yields control back to the calling context.
-    :rtype: Generator[None, None, None]
     """
     paths = []  # List to store the paths of created files
     try:
@@ -68,7 +67,17 @@ def temporary_files(
                 path.unlink()
 
 
-def flatten(arr):
+def flatten(arr: list[list[Any]]) -> list[Any]:
+    """
+    Flattens a list of lists into a single list.
+
+    :param arr: A list of lists to be flattened.
+    :return: A single list containing all the elements of the nested lists.
+
+    Example:
+    >>> flatten([[1, 2], [3, 4], [5]])
+    [1, 2, 3, 4, 5]
+    """
     return [element for subarr in arr for element in subarr]
 
 

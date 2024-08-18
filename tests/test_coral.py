@@ -2,7 +2,8 @@ import pytest
 from textwrap import dedent
 from jinja2 import Environment, FileSystemLoader
 import xml.etree.ElementTree as ET
-from coral import (
+
+from src.coral import (
     JsonNodeBuilder,
     Node,
     NodeAttributesRenderereVisitor,
