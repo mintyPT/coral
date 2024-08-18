@@ -1,17 +1,19 @@
 import json
 import logging
+import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, Template
 
-from .utils import apply_functions, flatten, iter_tree, map_func, remove_dups
+from .utils import (apply_functions, flatten, iter_tree, map_func, remove_dups,
+                    write_to_file)
 
 
 class Settings:
-    def __init__(self, folder_name=".coral"):
-        self.folder_name = folder_name
+    def __init__(self, folder_name=None):
+        self.folder_name = folder_name or os.getenv("CORAL_FOLDER_NAME", ".coral")
 
     @property
     def template_folder(self):
@@ -199,6 +201,8 @@ class NodeGenerator:
         return self.xml_builder.build(root_element)
 
     def _render(self, node):
+        logging.debug(f"Rendering node: {node}")
+
         ctx = {"node": node, "render": self._render}
 
         template_content = self.templates.get(node.tag)
@@ -213,7 +217,7 @@ class NodeGenerator:
         if "coral-to" in node.attributes:
             output_path = Path(node.attributes["coral-to"])
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            output_path.write_text(ret)
+            write_to_file(output_path, ret)
             logging.info(f"Saved to {output_path}")
 
         return ret
