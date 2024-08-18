@@ -12,6 +12,10 @@ install:
 test:
 	$(runner) pytest -vv
 
+# Define the command for running isort
+isort:
+	$(runner) isort .
+
 # Define the command for running ruff (formatter)
 format:
 	$(runner) ruff format .
@@ -25,7 +29,7 @@ type-check:
 	$(runner) mypy --cache-fine-grained .
 
 # Define a command to run all checks (linting, type-checking, and tests)
-check: format lint type-check test
+check: format isort lint type-check test
 
 # Define the default target (what should happen if 'make' is run without any arguments)
 .DEFAULT_GOAL := check
