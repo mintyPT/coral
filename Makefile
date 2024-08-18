@@ -25,7 +25,7 @@ type-check:
 	$(runner) mypy --cache-fine-grained .
 
 # Define a command to run all checks (linting, type-checking, and tests)
-check: lint type-check test
+check: format lint type-check test
 
 # Define the default target (what should happen if 'make' is run without any arguments)
 .DEFAULT_GOAL := check
