@@ -93,8 +93,13 @@ class Node:
     def __str__(self, level=0):
         indent = "    " * level
         child_str = "\n".join([child.__str__(level + 1) for child in self.children])
-        attrs_str = ", ".join(f"{k}={v}" for k, v in self.attributes.items())
-        return f"{indent}<Node({attrs_str})>" + (f"\n{child_str}" if child_str else "")
+        attrs_str = ", ".join(
+            f"{k}={v!r}" for k, v in self.attributes.items() if k not in ["tag"]
+        )
+        if attrs_str:
+            attrs_str = f"({attrs_str})"
+        tag = self.tag or "Node"
+        return f"{indent}<{tag} {attrs_str}>" + (f"\n{child_str}" if child_str else "")
 
 
 class NodeVisitor:
@@ -141,7 +146,6 @@ class XmlNodeBuilder:
         attributes = {
             **element.attrib,
             "tag": element.tag,
-            "text": element.text.strip() if element.text else "",
         }
         return Node(**attributes, children=children)
 
@@ -233,7 +237,6 @@ class NodeGenerator:
         if template_folder_name:
             template_dirs = [p / template_folder_name for p in template_dirs]
 
-        print(template_dirs)
         self.xml_input = xml_input
 
         self.template_engine = TemplateEngine(template_dirs)
