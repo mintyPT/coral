@@ -13,6 +13,7 @@ dependencies = [
     "types-pyyaml>=6.0.12.20240808",
     "types-jinja2>=2.11.9",
     "isort>=5.13.2",
+    "click>=8.1.8",
 ]
 
 [build-system]
@@ -21,3 +22,6 @@ build-backend = "hatchling.build"
 
 [tool.mypy-pytest]
 ignore_missing_imports = true
+
+[project.scripts]
+coral = "coral.cli:cli"

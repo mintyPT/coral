@@ -107,3 +107,16 @@ def write_to_file(path: Path, content: str) -> None:
     ensure_directory_exists(path)
     path.write_text(content)
     logging.info(f"Saved to {path}")
+
+
+def read_file(path: Path) -> str:
+    """
+    Read content from a file.
+    
+    Args:
+        path (Path): Path to the file to read
+        
+    Returns:
+        str: Content of the file
+    """
+    return path.read_text()

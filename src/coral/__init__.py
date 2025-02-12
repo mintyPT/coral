@@ -206,12 +206,25 @@ class YamlAttributeVisitor(NodeVisitor):
                 break
 
 
+def log_all(func):
+    def wrapper(*args, **kwargs):
+        print(f"👉 Calling {func.__name__} with args: {args}, kwargs: {kwargs}")
+        result = func(*args, **kwargs)
+        print(f"👉 {func.__name__} returned: {result}")
+        return result
+    return wrapper
+
+
+
 class NodeGenerator:
-    def __init__(self, xml_input, root_dir=".", templates=None, settings=None):
+    def __init__(self, xml_input, root_dir=".", templates=None, settings=None, template_folder_name=None):
         self.settings = settings or Settings()
 
         template_dirs = prepare_paths(self.settings, root_dir)
-
+        if template_folder_name:
+            template_dirs = [p / template_folder_name for p in template_dirs]
+        
+        print(template_dirs)
         self.xml_input = xml_input
 
         self.template_engine = TemplateEngine(template_dirs)
@@ -262,3 +275,4 @@ class NodeGenerator:
     def generate(self):
         ret = self._render(self.node)
         return ret
+

@@ -28,6 +28,9 @@ lint:
 type-check:
 	$(runner) mypy --cache-fine-grained .
 
+editable:
+	$(runner) uv pip install -e .
+
 # Define a command to run all checks (linting, type-checking, and tests)
 check: format isort lint type-check test
 
