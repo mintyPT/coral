@@ -20,14 +20,51 @@ class Settings:
         return f"{self.folder_name}/templates"
 
 
-def prepare_paths(settings, paths):
+def prepare_paths(settings: Settings, paths: list[str]) -> list[Path]:
+    """
+    Prepare a list of paths by resolving them and adding the settings folder name.
+    This will return the list of all places where models and templates can be found.
+
+    This function takes a list of paths and:
+    1. Resolves each path to its absolute form
+    2. Generates parent paths for each path
+    3. Flattens the resulting list of paths
+    4. Removes any duplicate paths
+    5. Appends the settings folder name to each path
+
+    Args:
+        settings: Settings object containing the folder_name to append
+        paths: List of path strings to process
+
+    Returns:
+        List of Path objects with settings folder name appended
+
+    Example:
+        >>> settings = Settings(folder_name='.coral')
+        >>> prepare_paths(settings, ['/a/b/c', '/d/e'])
+        [
+            Path('/a/b/c/.coral'),
+            Path('/a/b/.coral'),
+            Path('/a/.coral'),
+            Path('/.coral'),
+            Path('/d/e/.coral'),
+            Path('/d/.coral')
+        ]
+    """
     return apply_functions(
         [
+            # Resolve the path to its absolute form
             map_func(lambda path: Path(path).resolve()),
+            # Generate parent paths
             map_func(iter_tree),
+            # Flatten the resulting list of paths
             flatten,
+            # Remove any duplicate paths
             remove_dups,
+            # Append the settings folder name to each path
             map_func(lambda path: path / settings.folder_name),
+            # Sort the paths
+            lambda paths: sorted(paths, key=lambda path: len(list(iter_tree(path))), reverse=True),
         ],
         paths,
     )

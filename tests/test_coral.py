@@ -21,10 +21,10 @@ def test__prepare_paths(settings: Settings) -> None:
     assert value == [
         Path("/a/b/c") / settings.folder_name,
         Path("/a/b") / settings.folder_name,
-        Path("/a") / settings.folder_name,
-        Path("/") / settings.folder_name,
         Path("/d/e") / settings.folder_name,
+        Path("/a") / settings.folder_name,
         Path("/d") / settings.folder_name,
+        Path("/") / settings.folder_name,
     ]
 
 
