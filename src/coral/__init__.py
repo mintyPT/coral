@@ -300,10 +300,8 @@ class NodeGenerator:
         """
         Recursively apply pre-render hooks to a node and its children.
         """
-        if not getattr(node, "_pre_render_hook_applied", False):
-            for hook in self.pre_render_hooks:
-                hook(node)
-            node._pre_render_hook_applied = True
+        for hook in self.pre_render_hooks:
+            hook(node)
         for child in node.children:
             self._apply_pre_render_hooks_recursively(child)
 
