@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import yaml
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from .utils import (apply_functions, flatten, iter_tree, map_func, remove_dups,
                     write_to_file)
@@ -158,16 +158,18 @@ class XmlNodeBuilder:
 class TemplateEngine:
     def __init__(self, template_dir=None):
         if template_dir:
-            self.env = Environment(loader=FileSystemLoader(template_dir))
+            self.env = Environment(
+                loader=FileSystemLoader(template_dir), undefined=StrictUndefined
+            )
         else:
-            self.env = Environment()
+            self.env = Environment(undefined=StrictUndefined)
 
     def render_from_file(self, template_file, context):
         template = self.env.get_template(template_file)
         return template.render(context)
 
     def render_from_string(self, template_string, context):
-        template = Template(template_string)
+        template = self.env.from_string(template_string)
         ret = template.render(context)
         return ret
 
