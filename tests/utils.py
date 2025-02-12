@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Generator, Optional
 
 
-
 @contextmanager
 def temporary_files(
     file_dict: dict[str, str], prefix: Optional[str] = None

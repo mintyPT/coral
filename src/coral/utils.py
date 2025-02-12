@@ -112,10 +112,10 @@ def write_to_file(path: Path, content: str) -> None:
 def read_file(path: Path) -> str:
     """
     Read content from a file.
-    
+
     Args:
         path (Path): Path to the file to read
-        
+
     Returns:
         str: Content of the file
     """

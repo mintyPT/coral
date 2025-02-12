@@ -1,4 +1,3 @@
-from tests.utils import temporary_files
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -8,7 +7,7 @@ from jinja2 import Environment, FileSystemLoader
 from src.coral import (JsonNodeBuilder, Node, NodeAttributesRenderereVisitor,
                        NodeGenerator, Settings, TemplateEngine, XmlNodeBuilder,
                        prepare_paths)
-
+from tests.utils import temporary_files
 
 
 @pytest.fixture

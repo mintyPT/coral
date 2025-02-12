@@ -64,7 +64,9 @@ def prepare_paths(settings: Settings, paths: list[str]) -> list[Path]:
             # Append the settings folder name to each path
             map_func(lambda path: path / settings.folder_name),
             # Sort the paths
-            lambda paths: sorted(paths, key=lambda path: len(list(iter_tree(path))), reverse=True),
+            lambda paths: sorted(
+                paths, key=lambda path: len(list(iter_tree(path))), reverse=True
+            ),
         ],
         paths,
     )
@@ -92,7 +94,7 @@ class Node:
         indent = "    " * level
         child_str = "\n".join([child.__str__(level + 1) for child in self.children])
         attrs_str = ", ".join(f"{k}={v}" for k, v in self.attributes.items())
-        return f"{indent}<Node({attrs_str})>" + (f"\n{child_str}" if child_str else f"")
+        return f"{indent}<Node({attrs_str})>" + (f"\n{child_str}" if child_str else "")
 
 
 class NodeVisitor:
@@ -212,18 +214,25 @@ def log_all(func):
         result = func(*args, **kwargs)
         print(f"👉 {func.__name__} returned: {result}")
         return result
+
     return wrapper
 
 
-
 class NodeGenerator:
-    def __init__(self, xml_input, root_dir=".", templates=None, settings=None, template_folder_name=None):
+    def __init__(
+        self,
+        xml_input,
+        root_dir=".",
+        templates=None,
+        settings=None,
+        template_folder_name=None,
+    ):
         self.settings = settings or Settings()
 
         template_dirs = prepare_paths(self.settings, root_dir)
         if template_folder_name:
             template_dirs = [p / template_folder_name for p in template_dirs]
-        
+
         print(template_dirs)
         self.xml_input = xml_input
 
@@ -275,4 +284,3 @@ class NodeGenerator:
     def generate(self):
         ret = self._render(self.node)
         return ret
-
