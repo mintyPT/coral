@@ -92,7 +92,7 @@ class Node:
         indent = "    " * level
         child_str = "\n".join([child.__str__(level + 1) for child in self.children])
         attrs_str = ", ".join(f"{k}={v}" for k, v in self.attributes.items())
-        return f"{indent}Node({attrs_str})" + f"\n{child_str}" if child_str else ""
+        return f"{indent}<Node({attrs_str})>" + (f"\n{child_str}" if child_str else f"")
 
 
 class NodeVisitor:
@@ -251,7 +251,7 @@ class NodeGenerator:
         return self.xml_builder.build(root_element)
 
     def _render(self, node):
-        logging.debug(f"Rendering node: {node}")
+        logging.debug(f"Rendering node:\n{node}\n")
 
         ctx = {"node": node, "render": self._render}
 
