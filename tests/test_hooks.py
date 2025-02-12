@@ -86,3 +86,28 @@ def test_hooks_loaded_from_file(temporary_files, settings):
         generator = NodeGenerator(xml_input, templates=templates)
         result = generator.generate()
         assert result == "Name: Original_File"
+
+
+def test_load_hooks_from_file(tmp_path):
+    # Create a temporary hooks file that defines a pre-render hook.
+    hooks_file = tmp_path / "hooks.py"
+    hook_file_content = (
+        "pre_render_hooks = [\n"
+        "    lambda node: node.attributes.update({'loaded': True})\n"
+        "]\n"
+    )
+    hooks_file.write_text(hook_file_content)
+
+    # Import the load_hooks_from_file function and a dummy Node class.
+    from src.coral import Node, load_hooks_from_file
+
+    # Load hooks from the temporary hooks file.
+    hooks = load_hooks_from_file(hooks_file)
+    assert isinstance(hooks, list)
+    assert len(hooks) == 1
+
+    # Create a dummy node and apply the loaded hook.
+    node = Node(name="Test", tag="dummy")
+    hooks[0](node)
+    # Verify that the hook modified the node as expected.
+    assert node.attributes.get("loaded") is True
