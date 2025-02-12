@@ -422,3 +422,33 @@ def test__coral_print(capsys):
     ), f"Expected printed output '{expected}', got '{captured}'"
     # Also verify that the generated result is as expected
     assert result == expected, f"Expected result '{expected}', got '{result}'"
+
+
+def test__xml_json_decoded_attributes():
+    """
+    Test that XML attributes are JSON-decoded when possible.
+    The test uses:
+    - name: a JSON encoded string ("\"root\"") that should decode to "root"
+    - child1.value: "1" which should decode to the integer 1
+    - child2.value: "[10, 20, 30]" which should decode to the list [10, 20, 30]
+    - child3.value: a non-JSON value that should fall back to its original string
+    """
+    xml_data = """
+    <root name='"root"'>
+        <child1 value="1" />
+        <child2 value="[10, 20, 30]" />
+        <child3 value="not a json" />
+    </root>
+    """
+    xml_root = ET.fromstring(xml_data)
+    xml_builder = XmlNodeBuilder()
+    root_node = xml_builder.build(xml_root)
+
+    # Root's name should be decoded from the JSON string '"root"'
+    assert root_node.name == "root", root_node.name
+    # Child 1 value "1" should become integer 1
+    assert root_node.children[0].value == 1, root_node.children[0].value
+    # Child 2 value "[10, 20, 30]" should become a list
+    assert root_node.children[1].value == [10, 20, 30], root_node.children[1].value
+    # Child 3 value that is not valid JSON should remain unchanged
+    assert root_node.children[2].value == "not a json", root_node.children[2].value

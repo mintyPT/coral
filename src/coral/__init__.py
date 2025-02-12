@@ -143,10 +143,13 @@ class JsonNodeBuilder:
 class XmlNodeBuilder:
     def build(self, element):
         children = [self.build(child) for child in element]
-        attributes = {
-            **element.attrib,
-            "tag": element.tag,
-        }
+        attributes = {}
+        for key, value in element.attrib.items():
+            try:
+                attributes[key] = json.loads(value)
+            except json.JSONDecodeError:
+                attributes[key] = value
+        attributes["tag"] = element.tag
         return Node(**attributes, children=children)
 
     def build_from_file(self, filepath):
