@@ -3,6 +3,7 @@ import logging
 import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import Callable, List, Optional
 
 import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -227,6 +228,20 @@ def log_all(func):
     return wrapper
 
 
+def load_hooks_from_file(hook_file: Path) -> List[Callable[["Node"], None]]:
+    """Load pre-render hooks from the given hook file."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("coral_hooks", str(hook_file))
+    if spec is None:
+        raise ImportError(f"Could not load module from {hook_file}")
+    module = importlib.util.module_from_spec(spec)
+    if spec.loader is None:
+        raise ImportError(f"No loader for module from {hook_file}")
+    spec.loader.exec_module(module)
+    return getattr(module, "pre_render_hooks", [])
+
+
 class NodeGenerator:
     def __init__(
         self,
@@ -235,6 +250,8 @@ class NodeGenerator:
         templates=None,
         settings=None,
         template_folder_name=None,
+        pre_render_hooks: Optional[List[Callable[["Node"], None]]] = None,
+        hooks_file_name: str = "hooks.py",
     ):
         self.settings = settings or Settings()
 
@@ -262,10 +279,33 @@ class NodeGenerator:
         self.templates["void"] = """{%- for child in node.children -%}
     {{ render(child) }}
 {%- endfor %}"""
+        self.pre_render_hooks = pre_render_hooks or []
+        # Auto-load hooks from a single hooks file: look for hooks_file_name
+        # in the prepared paths and load the first one found.
+        hook_dirs = prepare_paths(self.settings, root_dir)
+        for hook_dir in hook_dirs:
+            hook_file = hook_dir / hooks_file_name
+            if hook_file.exists():
+                self.pre_render_hooks.extend(load_hooks_from_file(hook_file))
+
+    def register_pre_render_hook(self, hook: Callable[["Node"], None]) -> None:
+        """Register a pre-render hook to modify/process nodes before rendering."""
+        self.pre_render_hooks.append(hook)
 
     def _build_node(self):
         root_element = ET.fromstring(self.xml_input)
         return self.xml_builder.build(root_element)
+
+    def _apply_pre_render_hooks_recursively(self, node):
+        """
+        Recursively apply pre-render hooks to a node and its children.
+        """
+        if not getattr(node, "_pre_render_hook_applied", False):
+            for hook in self.pre_render_hooks:
+                hook(node)
+            node._pre_render_hook_applied = True
+        for child in node.children:
+            self._apply_pre_render_hooks_recursively(child)
 
     def _render(self, node):
         logging.debug(f"Rendering node:\n{node}\n")
@@ -293,5 +333,7 @@ class NodeGenerator:
         return ret
 
     def generate(self):
+        # Preprocess the entire node tree with hooks before rendering.
+        self._apply_pre_render_hooks_recursively(self.node)
         ret = self._render(self.node)
         return ret
