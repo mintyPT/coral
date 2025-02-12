@@ -1,4 +1,3 @@
-import sys
 from contextlib import contextmanager
 
 import pytest
@@ -21,13 +20,8 @@ def temporary_files(tmp_path):
             file_path = base_dir / filename
             file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_text(content)
-        # Insert the directory into sys.path for module loading.
-        sys.path.insert(0, str(base_dir))
-        try:
-            yield base_dir
-        finally:
-            if str(base_dir) in sys.path:
-                sys.path.remove(str(base_dir))
+            print(f"Created {file_path}")
+        yield base_dir
 
     return _create
 

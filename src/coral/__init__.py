@@ -287,6 +287,7 @@ class NodeGenerator:
             hook_file = hook_dir / hooks_file_name
             if hook_file.exists():
                 self.pre_render_hooks.extend(load_hooks_from_file(hook_file))
+        print(f"Loaded {len(self.pre_render_hooks)} pre-render hooks from {hook_dirs=}")
 
     def register_pre_render_hook(self, hook: Callable[["Node"], None]) -> None:
         """Register a pre-render hook to modify/process nodes before rendering."""
