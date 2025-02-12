@@ -284,6 +284,9 @@ class NodeGenerator:
             write_to_file(output_path, ret)
             logging.info(f"Saved to {output_path}")
 
+        if "coral-print" in node.attributes:
+            print(ret)
+
         return ret
 
     def generate(self):

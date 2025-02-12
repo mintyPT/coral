@@ -399,3 +399,26 @@ def test__o(settings):
         result = generator.generate()
 
     assert result == expected, f"\n{result!r}\n{expected!r}"
+
+
+def test__coral_print(capsys):
+    """
+    Test that the 'coral-print' attribute causes the generated output to be printed to stdout.
+    """
+    xml_input = '<printtest coral-print="true" name="Test"></printtest>'
+    templates = {"printtest": "Printed: {{ node.name }}"}
+
+    # Create the node generator with the provided XML input and templates
+    generator = NodeGenerator(xml_input, templates=templates)
+    result = generator.generate()
+
+    # Capture the printed output
+    captured = capsys.readouterr().out
+    expected = "Printed: Test"
+
+    # Verify that the printed output contains the expected string
+    assert (
+        expected in captured
+    ), f"Expected printed output '{expected}', got '{captured}'"
+    # Also verify that the generated result is as expected
+    assert result == expected, f"Expected result '{expected}', got '{result}'"
