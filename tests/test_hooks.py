@@ -82,8 +82,13 @@ def test_hooks_loaded_from_file(temporary_files, settings):
         "]"
     )
 
-    with temporary_files({"hooks.py": hooks_file_content}, prefix=settings.folder_name):
-        generator = NodeGenerator(xml_input, templates=templates)
+    with temporary_files(
+        {"hooks.py": hooks_file_content}, prefix=settings.folder_name
+    ) as base_dir:
+        # Pass the temporary directory as root_dir so the hooks file is found.
+        generator = NodeGenerator(
+            xml_input, templates=templates, root_dir=str(base_dir)
+        )
         result = generator.generate()
         assert result == "Name: Original_File"
 
